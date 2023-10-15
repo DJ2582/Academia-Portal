@@ -1,4 +1,3 @@
-//#include<stdio.h>
 struct StudentDetail
 {
 	int id;
@@ -18,4 +17,14 @@ struct FacultyDetail
     char email[50];
     char address[50];
     char designation[50];
+};
+
+struct CourseDetail
+{
+    int id;
+    int faculty_id;
+    char name[50];
+    char department[50];
+    int seat;
+    int credit;
 };
