@@ -54,7 +54,7 @@ int main() {
      memset(server_response_admin,'\0',512*sizeof(char));
      //strcpy(server_response_admin,"");
      recv(client_socket, &server_response_admin, sizeof(server_response_admin), 0);
-    while(1)
+     while(1)
     {
         //admin menu
         printf("%s",server_response_admin);
@@ -105,21 +105,6 @@ int main() {
      }
      if(choice_admin=='2')
      {
-        // char rec_msg[50];
-        // memset(&rec_msg,0,sizeof(rec_msg));
-        // recv(client_socket,rec_msg,sizeof(rec_msg),0);
-        // printf("%s",rec_msg);
-        
-        // char send_id[10];
-        // // memset(&send_id,0,sizeof(send_id));
-        // scanf("%s",send_id);
-        // send(client_socket,send_id,sizeof(send_id),0);
-
-        // char sent_detail[300];
-        // memset(&sent_detail,0,sizeof(sent_detail));
-        // recv(client_socket,&sent_detail,sizeof(sent_detail),0);
-        // printf("%s",sent_detail);
-
         char idprompt[50];
         memset(idprompt,0,sizeof(idprompt));
         recv(client_socket,idprompt,sizeof(idprompt),0);
@@ -185,21 +170,7 @@ int main() {
 
      if(choice_admin=='4')
      {
-        // char rec_msg[50];
-        // memset(&rec_msg,0,sizeof(rec_msg));
-        // recv(client_socket,rec_msg,sizeof(rec_msg),0);
-        // printf("%s",rec_msg);
         
-        // char send_id[10];
-        // // memset(&send_id,0,sizeof(send_id));
-        // scanf("%s",send_id);
-        // send(client_socket,send_id,sizeof(send_id),0);
-
-        // char sent_detail[300];
-        // memset(&sent_detail,0,sizeof(sent_detail));
-        // recv(client_socket,&sent_detail,sizeof(sent_detail),0);
-        // printf("%s",sent_detail);
-
         char id_prompt[50];
         memset(id_prompt,0,sizeof(id_prompt));
         recv(client_socket,id_prompt,sizeof(id_prompt),0);
@@ -217,6 +188,7 @@ int main() {
         recv(client_socket,&student_data,sizeof(student_data),0);
         printf("%s",student_data);   
      }
+
      if(choice_admin=='7')
      {
 
@@ -281,6 +253,201 @@ int main() {
 
     } 
 }
+
+if(readchoice=='2')
+{
+        //faculty module
+        char login_prompt[30];
+        char send_login_id[30];
+        char password_prompt[30];
+        char send_password[30];
+
+        //recieving login prompt
+        recv(client_socket,&login_prompt,sizeof(login_prompt),0);
+        printf("%s",login_prompt);
+  
+        //sending login id
+        scanf("%s",send_login_id);
+        send(client_socket,send_login_id,sizeof(send_login_id),0);
+
+        //recieving password prompt
+        recv(client_socket,&password_prompt,sizeof(password_prompt),0);
+        printf("%s",password_prompt);
+
+        //sending password
+        scanf("%s",send_password);
+        send(client_socket,send_password,sizeof(send_password),0);
+
+        //recieving valid value
+        int valid;
+        recv(client_socket,&valid,sizeof(valid),0);
+        if(valid==1)
+        {
+            char result[37];
+            recv(client_socket,&result,sizeof(result),0);
+            printf("%s",result);
+            
+            //if login is successfull recieve student menu
+            char server_response_faculty[512];
+            memset(server_response_faculty,0,512*sizeof(char));
+            recv(client_socket, &server_response_faculty, sizeof(server_response_faculty),0);
+            printf("%s",server_response_faculty);
+        }
+        else
+        {
+            char result[32];
+            recv(client_socket,&result,sizeof(result),0);
+            printf("%s",result);
+        }
+}
+
+
+
+if(readchoice=='3')
+{
+
+     //faculty module
+    char login_prompt[30];
+    memset(&login_prompt,0,sizeof(login_prompt));
+    char send_login_id[30];
+    char password_prompt[30];
+    char send_password[30];
+
+    //recieving login prompt
+    recv(client_socket,&login_prompt,sizeof(login_prompt),0);
+    printf("%s",login_prompt);
+
+    //sending login id
+    scanf("%s",send_login_id);
+    send(client_socket,send_login_id,sizeof(send_login_id),0);
+
+    //recieving password prompt
+    recv(client_socket,&password_prompt,sizeof(password_prompt),0);
+    printf("%s",password_prompt);
+
+    //sending password
+    scanf("%s",send_password);
+    send(client_socket,send_password,sizeof(send_password),0);
+
+    //recieving valid value
+    int valid;
+    recv(client_socket,&valid,sizeof(valid),0);
+    if(valid==1)
+    {
+    char result[37];
+    recv(client_socket,&result,sizeof(result),0);
+    printf("%s",result);
+        
+    //if login is successfull recieve faculty menu
+    char server_response_faculty[512];
+    memset(server_response_faculty,'\0',512*sizeof(char));
+    //strcpy(server_response_admin,"");
+    recv(client_socket, &server_response_faculty, sizeof(server_response_faculty), 0);
+    while(1)
+    {
+        //admin menu
+        printf("%s",server_response_faculty);
+        //taking choice from that admin menu
+        char choice_faculty;
+        printf("Enter your choice faculty: ");
+        scanf(" %c", &choice_faculty);
+        send(client_socket, &choice_faculty, sizeof(choice_faculty), 0);
+        if(choice_faculty=='6') break;
+
+        if(choice_faculty=='1')
+        {
+            int ack;
+            while(1)
+            {
+              recv(client_socket,&ack,sizeof(ack),0);
+            //   printf("%d",ack);
+              if(ack==0)break;
+              struct CourseDetail course;
+              recv(client_socket,&course,sizeof(course),0);
+              printf("Course Id=%d\n",course.id);
+              printf("Course Name=%s\n",course.name);
+              printf("Department offering course=%s\n",course.department);
+              printf("Number of Seats=%d\n",course.seat);
+              printf("course credit=%d\n",course.credit);
+            }    
+        }
+        //add course
+        if(choice_faculty=='2')
+        {
+        
+           char buffer[512],fac_ques[30];
+            memset(&fac_ques,0,sizeof(fac_ques));
+            recv(client_socket,&fac_ques,sizeof(fac_ques),0);
+            printf("%s",fac_ques);
+            memset(fac_ques,0,sizeof(fac_ques));
+            scanf("%s",fac_ques);
+            send(client_socket,fac_ques,sizeof(fac_ques),0);
+            memset(&fac_ques,0,sizeof(fac_ques));
+
+            recv(client_socket,&fac_ques,sizeof(fac_ques),0);
+            printf("%s",fac_ques);
+            memset(fac_ques,0,sizeof(fac_ques));
+            // getchar();
+            scanf("%s",fac_ques);
+            send(client_socket,fac_ques,sizeof(fac_ques),0);
+            memset(&fac_ques,0,sizeof(fac_ques));
+
+            recv(client_socket,&fac_ques,sizeof(fac_ques),0);
+            printf("%s",fac_ques);
+            memset(fac_ques,0,sizeof(fac_ques));
+            scanf("%s",fac_ques);
+            send(client_socket,fac_ques,sizeof(fac_ques),0);
+            memset(&fac_ques,0,sizeof(fac_ques));
+
+            recv(client_socket,&fac_ques,sizeof(fac_ques),0);
+            printf("%s",fac_ques);
+            memset(fac_ques,0,sizeof(fac_ques));
+            scanf("%s",fac_ques);
+            send(client_socket,fac_ques,sizeof(fac_ques),0);
+            memset(&fac_ques,0,sizeof(fac_ques));
+
+            char fac_rec_msg[512];
+            recv(client_socket, &fac_rec_msg, sizeof(fac_rec_msg), 0);
+            printf("%s\n", fac_rec_msg);
+        }
+        
+        if(choice_faculty=='3')
+        {
+            char delete_propmt[40];
+            recv(client_socket,&delete_propmt,sizeof(delete_propmt),0);
+            printf("%s",delete_propmt);
+
+            //sending id to delete
+            int sendId;
+            scanf("%d",&sendId);
+            send(client_socket,&sendId,sizeof(sendId),0);
+        }
+        if(choice_faculty=='5')
+        {
+            //recieving password prompt
+            char recv_pasword[30];
+            recv(client_socket,&recv_pasword,sizeof(recv_pasword),0);
+            printf("%s",recv_pasword);
+
+            //sending password of user
+            char password[20];
+            scanf("%s",password);
+            send(client_socket,password,sizeof(password),0);
+
+            char rec_result[30];
+            memset(&rec_result,0,sizeof(rec_result));
+            recv(client_socket,&rec_result,sizeof(rec_result),0);
+            printf("%s",result);
+        }
+    }
+ }
+else
+{
+char result[32];
+recv(client_socket,&result,sizeof(result),0);
+printf("%s",result);
+}  
+}    
     close(client_socket);
     return 0;
 }
