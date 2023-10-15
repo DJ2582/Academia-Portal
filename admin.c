@@ -3,16 +3,28 @@
 #include <sys/socket.h>
 #include <fcntl.h>
 #include<string.h>
+#include <sys/stat.h>
 void add_student(int client_socket) {
     // Implement admin-specific functionality here
     //char message[] = "Welcome, admin!\n";
     //send(client_socket, message, sizeof(message), 0);
-    int fd=open("Student.txt",O_WRONLY|O_CREAT,0744);
+    int fd=open("student.txt",O_RDWR);
     struct StudentDetail student;
     memset(&student,0,sizeof(student));
     char buff[30];
+   
+    struct stat file_info;
+    fstat(fd, &file_info);
 
-    student.id=1;
+    if(file_info.st_size != 0){
+        lseek(fd,-(sizeof(struct StudentDetail)),SEEK_END);
+        struct StudentDetail stucpy;
+        read(fd,&stucpy,sizeof(struct StudentDetail));
+        student.id = stucpy.id + 1;
+    }
+    else{
+        student.id= 1;
+    }
     strcpy(student.password,"initial");
     // student.active=true;
     char msg1[]="enter student name:";
@@ -81,7 +93,7 @@ void view_student(int client_socket)
     // send(client_socket,&buff_view,sizeof(buff_view),0);
     // close(fd_view);
 
-    int file=open("Student.txt",O_RDONLY|O_CREAT,0744);
+    int file=open("student.txt",O_RDONLY|O_CREAT,0744);
     
     //send idprompt
     char idprompt[]="enter student id:\n";
@@ -111,12 +123,24 @@ void add_faculty(int client_socket) {
     // Implement admin-specific functionality here
     //char message[] = "Welcome, admin!\n";
     //send(client_socket, message, sizeof(message), 0);
-    int fd=open("faculty.txt",O_WRONLY|O_CREAT,0744);
+    int fd=open("faculty.txt",O_RDWR);
     struct FacultyDetail faculty;
     memset(&faculty,0,sizeof(faculty));
     char fac_buff[30];
 
-    faculty.id=1;
+    struct stat file_info_faculty;
+    fstat(fd, &file_info_faculty);
+
+    if(file_info_faculty.st_size!=0){
+        lseek(fd,-(sizeof(struct FacultyDetail)),SEEK_END);
+        struct FacultyDetail faculty_cpy;
+        read(fd,&faculty_cpy,sizeof(struct FacultyDetail));
+        faculty.id = faculty_cpy.id+1;
+    }
+    else{
+        faculty.id= 1;
+    }
+
     strcpy(faculty.password,"initial");
     // faculty.active=true;
     char msg10[]="enter faculty name:";
@@ -219,7 +243,7 @@ void view_faculty(int client_socket)
 
 void modify_student(int client_socket)
 {
-    int file = open("Student.txt", O_RDWR);
+    int file = open("student.txt", O_RDWR);
     if (file == -1) {
         perror("Error opening file");
     }
