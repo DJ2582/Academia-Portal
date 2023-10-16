@@ -106,14 +106,8 @@ void view_course(int client_socket,int id)
     {
         if(course.faculty_id==id)
         {
-            // printf("inside loop\n");
-            // ack=1;
             send(client_socket,&ack,sizeof(ack),0);
             send(client_socket,&course,sizeof(course),0);
-            // send(client_socket,course.name,sizeof(course.name),0);
-            // send(client_socket,&course.department,sizeof(course.department),0);
-            // send(client_socket,&course.seat,sizeof(course.seat),0);
-            // send(client_socket,&course.credit,sizeof(course.credit),0);
         }
     }
     ack=0;
