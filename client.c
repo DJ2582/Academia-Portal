@@ -414,6 +414,7 @@ if(readchoice=='3')
         if(choice_faculty=='3')
         {
             char delete_propmt[40];
+            memset(&delete_propmt,0,sizeof(delete_propmt));
             recv(client_socket,&delete_propmt,sizeof(delete_propmt),0);
             printf("%s",delete_propmt);
 
@@ -422,10 +423,40 @@ if(readchoice=='3')
             scanf("%d",&sendId);
             send(client_socket,&sendId,sizeof(sendId),0);
         }
+         if(choice_faculty=='4')
+        {
+
+            char get_id[30],set_id[30];
+            memset(get_id,0,sizeof(get_id));
+            recv(client_socket,get_id,sizeof(get_id),0);
+            printf("%s",get_id);
+            scanf("%s",set_id);
+            send(client_socket,set_id,sizeof(sizeof(set_id)),0);
+
+            char get_field[30],set_field[30];
+            memset(get_field,0,sizeof(get_field));
+            recv(client_socket,get_field,sizeof(get_field),0);
+            printf("%s",get_field);
+            scanf("%s",set_field);
+            send(client_socket,set_field,sizeof(set_field),0);
+
+            char get_value[30],set_value[30];
+            memset(get_value,0,sizeof(get_value));
+            recv(client_socket,get_value,sizeof(get_value),0);
+            printf("%s",get_value);
+            scanf("%s",set_value);
+            send(client_socket,set_value,sizeof(set_value),0);
+
+            char gotit[40];
+            memset(gotit,0,sizeof(gotit));
+            recv(client_socket,&gotit,sizeof(gotit),0);
+            printf("%s",gotit);
+        }
         if(choice_faculty=='5')
         {
             //recieving password prompt
             char recv_pasword[30];
+            memset(&recv_pasword,0,sizeof(recv_pasword));
             recv(client_socket,&recv_pasword,sizeof(recv_pasword),0);
             printf("%s",recv_pasword);
 
