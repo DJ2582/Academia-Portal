@@ -207,14 +207,14 @@ void handle_client(int client_socket) {
             send(client_socket,delete_prompt,strlen(delete_prompt),0);
 
             //recieving course id to delete
-            int c_id;
+            int c_id=0;
             recv(client_socket,&c_id,sizeof(c_id),0);
-            remove_course(client_socket,id);
+            remove_course(client_socket,c_id);
             }
-            // if(faculty_choice=='4')
-            // {
-
-            // }
+            if(faculty_choice=='4')
+            {
+            modify_course(client_socket);
+            }
             if(faculty_choice=='5')
             {
             char old_password[]="enter password:";
@@ -225,7 +225,6 @@ void handle_client(int client_socket) {
             recv(client_socket,&password,sizeof(password),0);
             
             change_password(client_socket,id,password);
-            // update_course(client_socket,id);
             }
     
         }
