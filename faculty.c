@@ -93,7 +93,7 @@ void add_course(int client_socket,int id)
 
 void view_course(int client_socket,int id)
 {
-    printf("hi\n");
+    // printf("hi\n");
     int fd=open("course.txt",O_RDWR);
     if(fd==-1)
     {
@@ -101,13 +101,13 @@ void view_course(int client_socket,int id)
     }
     struct CourseDetail course;
     int ack=1;
-    printf("after 1\n");
+    // printf("after 1\n");
     while(read(fd,&course,sizeof(course)))
     {
         if(course.faculty_id==id)
         {
-            printf("inside loop\n");
-            ack=1;
+            // printf("inside loop\n");
+            // ack=1;
             send(client_socket,&ack,sizeof(ack),0);
             send(client_socket,&course,sizeof(course),0);
             // send(client_socket,course.name,sizeof(course.name),0);
@@ -123,16 +123,16 @@ void view_course(int client_socket,int id)
 void remove_course(int client_socket,int id)
 {
     int fd=open("course.txt",O_RDWR);
-    struct CourseDetail course;
+    struct CourseDetail rem_course;
    
     int temp_fd = open("temp.txt", O_CREAT|O_RDWR|S_IRUSR|S_IWUSR,0777);
     
     //reading file and finding id to delete
-    while(read(fd,&course,sizeof(course)))
+    while(read(fd,&rem_course,sizeof(rem_course)))
     {
-        if(course.id!=id)
+        if(rem_course.id!=id)
         {
-            write(temp_fd, &course,sizeof(struct CourseDetail));
+            write(temp_fd, &rem_course,sizeof(struct CourseDetail));
         }
     }
 
@@ -143,6 +143,82 @@ void remove_course(int client_socket,int id)
     rename("temp.txt", "course.txt");
 }
 
+void modify_course(int client_socket)
+{
+    int file = open("course.txt", O_RDWR);
+    if (file == -1) {
+        perror("Error opening file");
+    }
+    struct CourseDetail detail;
+    char course_buff[30];
+    memset(&course_buff,0,sizeof(course_buff));
+    char txt1[]="enter course id:";
+    send(client_socket,txt1,strlen(txt1),0);
+    recv(client_socket,&course_buff,sizeof(course_buff),0);
+    int course_id=atoi(course_buff);
+    printf("received id:%d\n",course_id);
+    
+    //set the cursor to the end of the previous record
+    int offset=(course_id-1)*sizeof(struct CourseDetail);
+    lseek(file,offset,SEEK_SET);
+    //read the structure
+    read(file,&detail,sizeof(struct CourseDetail));
+    printf("id=%d\n",detail.id);
+    printf("name=%s\n",detail.name);
+    printf("department=%s\n",detail.department);
+    printf("seats=%d\n",detail.seat);
+    printf("credit=%d\n",detail.credit);
+    printf("faculty id=%d\n",detail.faculty_id);
+
+    char course_field[30];
+    memset(&course_field,0,sizeof(course_field));
+    char txt2[]="enter field:";
+    send(client_socket,txt2,strlen(txt2),0);
+    recv(client_socket,&course_field,sizeof(course_field),0);
+    printf("received field:%s\n",course_field);
+    
+    char course_value[30];
+    memset(&course_value,0,sizeof(course_value));
+    char txt3[]="enter value:";
+    send(client_socket,txt3,strlen(txt3),0);
+    recv(client_socket,&course_value,sizeof(course_value),0);
+    printf("received value:%s\n",course_value);
+    
+    //compare each value with field
+    if(strcmp(course_field,"name")==0)
+    {
+        memset(&detail.name,0,sizeof(detail.name));
+        memcpy(&detail.name,&course_value,strlen(course_value));
+    }
+    else if(strcmp(course_field,"seat")==0)
+    {
+        detail.seat=atoi(course_value);
+    }
+    else if(strcmp(course_field,"credit")==0)
+    {
+        detail.credit=atoi(course_value);
+    }
+    else if(strcmp(course_field,"department")==0)
+    {
+        memset(&detail.department,0,sizeof(detail.department));
+        memcpy(&detail.department,&course_value,strlen(course_value));
+    }
+    printf("id=%d\n",detail.id);
+    printf("name=%s\n",detail.name);
+    printf("department=%s\n",detail.department);
+    printf("seats=%d\n",detail.seat);
+    printf("credit=%d\n",detail.credit);
+    printf("faculty id=%d\n",detail.faculty_id);
+    
+    //write the data to the file
+    lseek(file,offset,SEEK_SET);
+    write(file,&detail,sizeof(struct CourseDetail));
+    
+    char course_send[]="successfully.\n";
+    send(client_socket,course_send,sizeof(course_send),0);
+    close(file);
+    
+}
 
 void change_password(int client_socket,int id,char* password)
 {
