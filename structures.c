@@ -28,3 +28,11 @@ struct CourseDetail
     int seat;
     int credit;
 };
+
+struct course_enrolled
+{
+	int student_id;
+	int course_id;
+	char course_name[50];
+	int faculty_id;	
+};
