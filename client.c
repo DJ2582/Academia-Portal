@@ -256,49 +256,137 @@ int main() {
 
 if(readchoice=='2')
 {
-        //faculty module
-        char login_prompt[30];
-        char send_login_id[30];
-        char password_prompt[30];
-        char send_password[30];
+    //faculty module
+    char login_prompt[30];
+    memset(&login_prompt,0,sizeof(login_prompt));
+    char send_login_id[30];
+    char password_prompt[30];
+    memset(&password_prompt,0,sizeof(password_prompt));
+    char send_password[30];
 
-        //recieving login prompt
-        recv(client_socket,&login_prompt,sizeof(login_prompt),0);
-        printf("%s",login_prompt);
-  
-        //sending login id
-        scanf("%s",send_login_id);
-        send(client_socket,send_login_id,sizeof(send_login_id),0);
+    //recieving login prompt
+    recv(client_socket,&login_prompt,sizeof(login_prompt),0);
+    printf("%s",login_prompt);
 
-        //recieving password prompt
-        recv(client_socket,&password_prompt,sizeof(password_prompt),0);
-        printf("%s",password_prompt);
+    //sending login id
+    scanf("%s",send_login_id);
+    send(client_socket,send_login_id,sizeof(send_login_id),0);
 
-        //sending password
-        scanf("%s",send_password);
-        send(client_socket,send_password,sizeof(send_password),0);
+    //recieving password prompt
+    recv(client_socket,&password_prompt,sizeof(password_prompt),0);
+    printf("%s",password_prompt);
 
-        //recieving valid value
-        int valid;
-        recv(client_socket,&valid,sizeof(valid),0);
-        if(valid==1)
+    //sending password
+    scanf("%s",send_password);
+    send(client_socket,send_password,sizeof(send_password),0);
+
+    //recieving valid value
+    int valid;
+    recv(client_socket,&valid,sizeof(valid),0);
+    if(valid==1)
+    {
+        char result[37];
+        recv(client_socket,&result,sizeof(result),0);
+        printf("%s",result);
+        
+        //if login is successfull recieve student menu
+        char server_response_faculty[512];
+        memset(server_response_faculty,0,512*sizeof(char));
+        recv(client_socket, &server_response_faculty, sizeof(server_response_faculty),0);
+        // printf("%s",server_response_faculty);
+       while(1)
+       {
+        //admin menu
+        printf("%s",server_response_faculty);
+        //taking choice from that admin menu
+        char choice_student;
+        printf("Enter your choice student: ");
+        scanf(" %c", &choice_student);
+        send(client_socket, &choice_student, sizeof(choice_student), 0);
+        if(choice_student=='6') break;
+
+        if(choice_student=='1')
         {
-            char result[37];
-            recv(client_socket,&result,sizeof(result),0);
-            printf("%s",result);
-            
-            //if login is successfull recieve student menu
-            char server_response_faculty[512];
-            memset(server_response_faculty,0,512*sizeof(char));
-            recv(client_socket, &server_response_faculty, sizeof(server_response_faculty),0);
-            printf("%s",server_response_faculty);
+            int ack;
+            while(1)
+            {
+              recv(client_socket,&ack,sizeof(ack),0);
+            //   printf("%d",ack);
+              if(ack==0)break;
+              struct CourseDetail course;
+              recv(client_socket,&course,sizeof(course),0);
+              printf("Course id=%d\n",course.id);
+              printf("Course Name=%s\n",course.name);
+              printf("Department offering course=%s\n",course.department);
+              printf("Number of Seats=%d\n",course.seat);
+              printf("course credit=%d\n",course.credit);
+            }    
         }
-        else
+         
+        if(choice_student=='2')
         {
-            char result[32];
-            recv(client_socket,&result,sizeof(result),0);
-            printf("%s",result);
+            //recieve choice of course
+            char course_id_prompt[40];
+            recv(client_socket,&course_id_prompt,sizeof(course_id_prompt),0);
+            printf("%s",course_id_prompt);
+
+            //send courseid
+            int course_id;
+            scanf("%d",&course_id);
+            send(client_socket,&course_id,sizeof(course_id),0); 
+
+            char receive_msg[30];
+            recv(client_socket,&receive_msg,sizeof(receive_msg),0);
+            printf("%s",receive_msg); 
         }
+
+        if(choice_student=='4')
+        {
+            int stu_ack;
+            while(1)
+            {
+              recv(client_socket,&stu_ack,sizeof(stu_ack),0);
+              if(stu_ack==0)break;
+              struct course_enrolled stu_course;
+              recv(client_socket,&stu_course,sizeof(stu_course),0);
+              printf("Course id=%d\n",stu_course.course_id);
+              printf("Course Name=%s\n",stu_course.course_name);
+              printf("student id=%d\n",stu_course.student_id);
+              printf("faculty id=%d\n",stu_course.faculty_id);
+              
+            }    
+        }
+
+        if(choice_student=='5')
+        {
+            //recieving password prompt
+            char recv_pasword[30];
+            memset(&recv_pasword,0,sizeof(recv_pasword));
+            recv(client_socket,&recv_pasword,sizeof(recv_pasword),0);
+            printf("%s",recv_pasword);
+
+            //sending password of user
+            char password[20];
+            scanf("%s",password);
+            send(client_socket,password,sizeof(password),0);
+
+            char rec_result[30];
+            memset(&rec_result,0,sizeof(rec_result));
+            recv(client_socket,&rec_result,sizeof(rec_result),0);
+            printf("%s",rec_result);
+            printf("\n");
+        }
+   
+
+        }
+
+    }
+    else
+    {
+        char result[32];
+        recv(client_socket,&result,sizeof(result),0);
+        printf("%s",result);
+    }
 }
 
 
@@ -364,7 +452,7 @@ if(readchoice=='3')
               if(ack==0)break;
               struct CourseDetail course;
               recv(client_socket,&course,sizeof(course),0);
-              printf("Course Id=%d\n",course.id);
+              printf("Course id=%d\n",course.id);
               printf("Course Name=%s\n",course.name);
               printf("Department offering course=%s\n",course.department);
               printf("Number of Seats=%d\n",course.seat);
@@ -465,10 +553,11 @@ if(readchoice=='3')
             scanf("%s",password);
             send(client_socket,password,sizeof(password),0);
 
-            char rec_result[30];
-            memset(&rec_result,0,sizeof(rec_result));
-            recv(client_socket,&rec_result,sizeof(rec_result),0);
-            printf("%s",result);
+            char receiving_result[30];
+            memset(&receiving_result,0,sizeof(receiving_result));
+            recv(client_socket,&receiving_result,sizeof(receiving_result),0);
+            printf("%s",receiving_result);
+            printf("\n");
         }
     }
  }
