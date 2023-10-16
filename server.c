@@ -5,9 +5,10 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+// #include "structures.c"
 #include "admin.c"
-// #include "student.c"
 #include "faculty.c"
+#include "student.c"
 
 void handle_client(int client_socket) {
 
@@ -72,79 +73,95 @@ void handle_client(int client_socket) {
      
     } 
     // printf("\n");
-    // if(choice==2)
-    // {
+    if(choice==2)
+    {
 
-    //   char login_prompt[]="enter login id:";
-    //   char password_prompt[]="enter password:";
-    //   char recv_login_id[30];
-    //   char recv_password[30];
-    //   //sending login prompt
-    //   send(client_socket,login_prompt,strlen(login_prompt),0);
+      char login_prompt[]="enter login id:";
+      char password_prompt[]="enter password:";
+      char recv_login_id[30];
+      char recv_password[30];
+      //sending login prompt
+      send(client_socket,login_prompt,strlen(login_prompt),0);
 
-    //   //recieving login id
-    //   recv(client_socket,&recv_login_id,sizeof(recv_login_id),0);
-    //   int id=atoi(recv_login_id);
-    //   printf("%d\n",id);
+      //recieving login id
+      recv(client_socket,&recv_login_id,sizeof(recv_login_id),0);
+      int stu_id=atoi(recv_login_id);
+      printf("%d\n",stu_id);
 
-    //   //sending password prompt
-    //   send(client_socket,password_prompt,strlen(password_prompt),0);
+      //sending password prompt
+      send(client_socket,password_prompt,strlen(password_prompt),0);
 
-    //   //recieving password
-    //   recv(client_socket,&recv_password,sizeof(recv_password),0);
-    //   printf("%s\n",recv_password);
+      //recieving password
+      recv(client_socket,&recv_password,sizeof(recv_password),0);
+      printf("%s\n",recv_password);
       
-    //   //sending valid value to check if user is found or not
-    //   int valid = login_student(client_socket,id,recv_password);
-    //   send(client_socket,&valid,sizeof(valid),0);
+      //sending valid value to check if user is found or not
+      int valid_stu = login_student(client_socket,stu_id,recv_password);
+      send(client_socket,&valid_stu,sizeof(valid_stu),0);
 
-    //   if(valid==1)
-    //   {
-    //     char result[]="login successfull....welcome faculty\n";
-    //     send(client_socket,result,strlen(result),0);
+      if(valid_stu==1)
+      {
+        char result[]="login successfull....welcome Student\n";
+        send(client_socket,result,strlen(result),0);
 
-    //     //if login is successfull send faculty menu
-    //     char menu_student[] = "Choose from the following options\n" 
-    //                             "1) View all Courses \n"
-    //                             "2) Enroll new Course \n"
-    //                             "3) Drop Course \n"
-    //                             "4) View Enrolled Course Detail \n"
-    //                             "5) Change Password \n"
-    //                             "6) Logout and exit \n";
-    //     send(client_socket,menu_student,strlen(menu_student), 0);
-    //     while(1)
-    //     {
-    //         //if choice is 1 send admin menu
-    //         char student_choice;
-    //         recv(client_socket, &student_choice,sizeof(student_choice), 0);
-    //         //call to respective c functions
-    //         if(student_choice=='6') break;
-    //         // if(faculty_choice=='1')
-    //         // {
-    //         //     view_course(client_socket);
-    //         // }
-    //         // if(student_choice=='2')
-    //         // {
-    //         //     view_courses(client_socket);
-    //         // }
-    //         // if(faculty_choice=='3')
-    //         // {
-    //         //     remove_course(client_socket);
-    //         // }
-    //         // if(faculty_choice=='4')
-    //         // {
-    //         //     update_course(client_socket);
-    //         // }
+        //if login is successfull send faculty menu
+        char menu_student[] = "Choose from the following options\n" 
+                                "1) View all Courses \n"
+                                "2) Enroll new Course \n"
+                                "3) Drop Course \n"
+                                "4) View Enrolled Course Detail \n"
+                                "5) Change Password \n"
+                                "6) Logout and exit \n";
+        send(client_socket,menu_student,strlen(menu_student), 0);
+        while(1)
+        {
+            //if choice is 1 send admin menu
+            char student_choice;
+            recv(client_socket, &student_choice,sizeof(student_choice), 0);
+            //call to respective c functions
+            if(student_choice=='6') break;
+            if(student_choice=='1')
+            {
+                view_all_course(client_socket);
+            }
+            if(student_choice=='2')
+            {
+                send(client_socket,"Enter course id,want to register:",sizeof("Enter course id,want to register?"),0);
+
+                //recieve courseid
+                int course_id;
+                recv(client_socket,&course_id,sizeof(course_id),0);
+
+                enroll_course(client_socket,stu_id,course_id);
+            }
+            // if(faculty_choice=='3')
+            // {
+            //     remove_course(client_socket);
+            // }
+            if(student_choice=='4')
+            {
+                view_enrolled_course(client_socket,stu_id);
+            }
+            if(student_choice=='5')
+            {
+                char old_password[]="enter password:";
+                send(client_socket,old_password,strlen(old_password),0);
+            
+                //recieving password of user
+                char password[20];
+                recv(client_socket,&password,sizeof(password),0);
+                change_password_student(client_socket,stu_id,password);
+            }
     
-    //     }
-    //   }
-    //   else
-    //   {
-    //     char sent_result[]="invalid credentials...try again\n";
-    //     send(client_socket,sent_result,strlen(sent_result),0);
-    //   }
+        }
+      }
+      else
+      {
+        char sent_result[]="invalid credentials...try again\n";
+        send(client_socket,sent_result,strlen(sent_result),0);
+      }
       
-    // } 
+    } 
 
     if(choice==3)
     {
