@@ -1,13 +1,12 @@
 #include <stdio.h>
-#include "structures.c"
 #include <sys/socket.h>
 #include <fcntl.h>
 #include<string.h>
 #include <sys/stat.h>
+#include "structures.c"
+
 void add_student(int client_socket) {
-    // Implement admin-specific functionality here
-    //char message[] = "Welcome, admin!\n";
-    //send(client_socket, message, sizeof(message), 0);
+    
     int fd=open("student.txt",O_RDWR);
     struct StudentDetail student;
     memset(&student,0,sizeof(student));
@@ -113,16 +112,14 @@ void view_student(int client_socket)
     int seekinfo=lseek(file,offset,SEEK_SET);
     int dataread=read(file,&student_detail,sizeof(struct StudentDetail));
     char tmp[10*sizeof(struct StudentDetail)];
-    sprintf(tmp,"\nStudent Id:%d\nname:%s\nage:%d\nemail:%s\naddress:%s\n",student_detail.id,student_detail.name,student_detail.age,student_detail.email,student_detail.address);
+    sprintf(tmp,"\nStudent id:%d\nname:%s\nage:%d\nemail:%s\naddress:%s\n",student_detail.id,student_detail.name,student_detail.age,student_detail.email,student_detail.address);
 
     send(client_socket,&tmp,strlen(tmp),0);
     close(file);
 }
 
 void add_faculty(int client_socket) {
-    // Implement admin-specific functionality here
-    //char message[] = "Welcome, admin!\n";
-    //send(client_socket, message, sizeof(message), 0);
+    
     int fd=open("faculty.txt",O_RDWR);
     struct FacultyDetail faculty;
     memset(&faculty,0,sizeof(faculty));
