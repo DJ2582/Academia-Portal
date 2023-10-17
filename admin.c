@@ -24,7 +24,7 @@ void add_student(int client_socket) {
     else{
         student.id= 1;
     }
-    strcpy(student.password,"initial");
+    strcpy(student.password,"darshit");
     // student.active=true;
     char msg1[]="enter student name:";
     send(client_socket,msg1,strlen(msg1),0);
@@ -51,6 +51,8 @@ void add_student(int client_socket) {
     strcpy(student.address,buff);
     memset(&buff,0,sizeof(buff));
     
+    student.active=1;
+
     lseek(fd,0,SEEK_END);
     write(fd,&student,sizeof(struct StudentDetail));
 
@@ -63,58 +65,41 @@ void add_student(int client_socket) {
 
     close(fd);
 
-    // Send success message back to the client
     char successMsg[] = "Student added successfully.\n";
     send(client_socket, successMsg, sizeof(successMsg), 0);
 }
 
 void view_student(int client_socket)
 {
-    // int fd_view=open("Student.txt",O_RDONLY|O_CREAT,0744);
-    // // char value='2';
-    // // send(client_socket,&value,sizeof(value),0);
-
-    // char req_id[]="Enter the student id:";
-    // send(client_socket,&req_id,sizeof(req_id),0);
-
-    // char rec_id[10];
-    // memset(rec_id,0,sizeof(rec_id));
-    // int id;
-    // recv(client_socket,&rec_id,sizeof(rec_id),0);
-    // id=atoi(rec_id);
-    // int offset=(id-1)*(sizeof(struct StudentDetail));
-    // struct StudentDetail stu;
-    // lseek(fd_view,offset,SEEK_SET);
-    // read(fd_view,&stu,sizeof(stu));
-    // char buff_view[10*sizeof(struct StudentDetail)];
-    // sprintf(buff_view,"\nid:%d \nname:%s \nage:%d \nemail:%s\nadress:%s\n",stu.id,stu.name,stu.age,stu.email,stu.address);
-
-    // send(client_socket,&buff_view,sizeof(buff_view),0);
-    // close(fd_view);
-
     int file=open("student.txt",O_RDONLY|O_CREAT,0744);
     
-    //send idprompt
     char idprompt[]="enter student id:\n";
     send(client_socket,&idprompt,strlen(idprompt),0);
  
-    //recieving id
     char idstr[10];
     int id;
     recv(client_socket,&idstr,sizeof(idstr),0);
     id=atoi(idstr);
 
-    //reaching top of the id we want to access data of 
+    //reaching end of the previous record 
     int offset=(id-1)*sizeof(struct StudentDetail);
     struct StudentDetail student_detail;
 
     //using lseek and accessing that information by setting pointer to current offset
     int seekinfo=lseek(file,offset,SEEK_SET);
     int dataread=read(file,&student_detail,sizeof(struct StudentDetail));
+    if(student_detail.active==1)
+    {
     char tmp[10*sizeof(struct StudentDetail)];
-    sprintf(tmp,"\nStudent id:%d\nname:%s\nage:%d\nemail:%s\naddress:%s\n",student_detail.id,student_detail.name,student_detail.age,student_detail.email,student_detail.address);
+    sprintf(tmp,"\nStudent id:%d\nname:%s\nage:%d\nemail:%s\naddress:%s\nactive_status:%d\n",student_detail.id,student_detail.name,student_detail.age,student_detail.email,student_detail.address,student_detail.active);
 
     send(client_socket,&tmp,strlen(tmp),0);
+    }
+    else
+    {
+        char error_msg[]="No Data Avilable..\n";
+        send(client_socket,error_msg,sizeof(error_msg),0);
+    }
     close(file);
 }
 
@@ -190,28 +175,7 @@ void add_faculty(int client_socket) {
 
 void view_faculty(int client_socket)
 {
-    // int fd_view=open("Student.txt",O_RDONLY|O_CREAT,0744);
-    // // char value='2';
-    // // send(client_socket,&value,sizeof(value),0);
-
-    // char req_id[]="Enter the student id:";
-    // send(client_socket,&req_id,sizeof(req_id),0);
-
-    // char rec_id[10];
-    // memset(rec_id,0,sizeof(rec_id));
-    // int id;
-    // recv(client_socket,&rec_id,sizeof(rec_id),0);
-    // id=atoi(rec_id);
-    // int offset=(id-1)*(sizeof(struct StudentDetail));
-    // struct StudentDetail stu;
-    // lseek(fd_view,offset,SEEK_SET);
-    // read(fd_view,&stu,sizeof(stu));
-    // char buff_view[10*sizeof(struct StudentDetail)];
-    // sprintf(buff_view,"\nid:%d \nname:%s \nage:%d \nemail:%s\nadress:%s\n",stu.id,stu.name,stu.age,stu.email,stu.address);
-
-    // send(client_socket,&buff_view,sizeof(buff_view),0);
-    // close(fd_view);
-
+   
     int fd=open("faculty.txt",O_RDONLY|O_CREAT,0744);
     
     //send idprompt
@@ -334,7 +298,7 @@ void modify_faculty(int client_socket)
     lseek(file,offset,SEEK_SET);
     //read the structure
     read(file,&fac1,sizeof(struct FacultyDetail));
-    printf("Id=%d\n",fac1.id);
+    printf("id=%d\n",fac1.id);
     printf("name=%s\n",fac1.name);
     printf("password=%s\n",fac1.password);
     printf("department=%s\n",fac1.department);
@@ -382,7 +346,7 @@ void modify_faculty(int client_socket)
         memset(&fac1.designation,0,sizeof(fac1.designation));
         memcpy(&fac1.designation,&fac_value,strlen(fac_value));
     }
-    printf("Id=%d\n",fac1.id);
+    printf("id=%d\n",fac1.id);
     printf("name=%s\n",fac1.name);
     printf("password=%s\n",fac1.password);
     printf("department=%s\n",fac1.department);
@@ -398,4 +362,66 @@ void modify_faculty(int client_socket)
     send(client_socket,fac_send,sizeof(fac_send),0);
     close(file);
     
+}
+
+void activate_student(int client_socket)
+{
+    char student_id_str[10];
+    int student_id;
+    char prompt[] = "Enter the ID of the student to activate: ";
+    send(client_socket, prompt, strlen(prompt), 0);
+    recv(client_socket, student_id_str, sizeof(student_id_str), 0);
+    student_id = atoi(student_id_str);
+
+    
+    int student_file = open("student.txt", O_RDWR);
+
+    //at the end of the previous record
+    int offset = (student_id - 1) * sizeof(struct StudentDetail);
+    int seek_result = lseek(student_file, offset, SEEK_SET);
+
+    struct StudentDetail student;
+    read(student_file, &student, sizeof(struct StudentDetail));
+
+    // Activate the student
+    student.active = 1;
+
+    //set the cursor to the start of that record
+    lseek(student_file, offset, SEEK_SET);
+    write(student_file, &student, sizeof(struct StudentDetail));
+
+
+    close(student_file);
+
+    char success_txt[] = "Student activated successfully.";
+    send(client_socket, success_txt, sizeof(success_txt), 0);
+}
+
+void block_student(int client_socket)
+{
+    char student_id_str1[10];
+    int student_id1;
+
+    char prompt1[] = "Enter the ID of the student to activate: ";
+    send(client_socket, prompt1, strlen(prompt1), 0);
+    recv(client_socket, student_id_str1, sizeof(student_id_str1), 0);
+    student_id1 = atoi(student_id_str1);
+
+    int student_file = open("student.txt", O_RDWR);
+
+    // Set the cursor to the start of desired record
+    int offset = (student_id1 - 1) * sizeof(struct StudentDetail);
+    int seek_result = lseek(student_file, offset, SEEK_SET);
+
+    struct StudentDetail student;
+    int read_result = read(student_file, &student, sizeof(struct StudentDetail));
+
+    student.active = 0;
+    lseek(student_file, offset, SEEK_SET);
+
+    write(student_file, &student, sizeof(struct StudentDetail));
+
+    close(student_file);
+    char success_msg[] = "Student blocked successfully.";
+    send(client_socket, success_msg, sizeof(success_msg), 0);
 }
