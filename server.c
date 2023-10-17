@@ -5,7 +5,6 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-// #include "structures.c"
 #include "admin.c"
 #include "faculty.c"
 #include "student.c"
@@ -60,6 +59,14 @@ void handle_client(int client_socket) {
             if(student_choice=='4')
             {
                 view_faculty(client_socket);
+            }
+            if(student_choice=='5')
+            {
+                activate_student(client_socket);
+            }
+            if(student_choice=='6')
+            {
+                block_student(client_socket);
             }
             if(student_choice=='7')
             {
@@ -134,10 +141,19 @@ void handle_client(int client_socket) {
 
                 enroll_course(client_socket,stu_id,course_id);
             }
-            // if(faculty_choice=='3')
-            // {
-            //     remove_course(client_socket);
-            // }
+            if(student_choice=='3')
+            {
+                 //asking the user which course they want to denroll
+                send(client_socket,"Enter the course id you want to denroll for: ",sizeof("Enter the course id you want to denroll for: "),0);
+
+                //recieving course id
+                int course_id;
+                recv(client_socket,&course_id,sizeof(course_id),0);
+
+                //calling de-enroll function
+                drop_course(client_socket,stu_id,course_id);
+                // remove_course(client_socket);
+            }
             if(student_choice=='4')
             {
                 view_enrolled_course(client_socket,stu_id);
@@ -220,28 +236,28 @@ void handle_client(int client_socket) {
             if(faculty_choice=='3')
             {
             
-            char delete_prompt[]="select course id you want to delete:";
-            send(client_socket,delete_prompt,strlen(delete_prompt),0);
+                char delete_prompt[]="select course id you want to delete:";
+                send(client_socket,delete_prompt,strlen(delete_prompt),0);
 
-            //recieving course id to delete
-            int c_id=0;
-            recv(client_socket,&c_id,sizeof(c_id),0);
-            remove_course(client_socket,c_id);
+                //recieving course id to delete
+                int c_id=0;
+                recv(client_socket,&c_id,sizeof(c_id),0);
+                remove_course(client_socket,c_id);
             }
             if(faculty_choice=='4')
             {
-            modify_course(client_socket);
+                modify_course(client_socket);
             }
             if(faculty_choice=='5')
             {
-            char old_password[]="enter password:";
-            send(client_socket,old_password,strlen(old_password),0);
-            
-            //recieving password of user
-            char password[20];
-            recv(client_socket,&password,sizeof(password),0);
-            
-            change_password(client_socket,id,password);
+                char old_password[]="enter password:";
+                send(client_socket,old_password,strlen(old_password),0);
+                
+                //recieving password of user
+                char password[20];
+                recv(client_socket,&password,sizeof(password),0);
+                
+                change_password(client_socket,id,password);
             }
     
         }
