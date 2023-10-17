@@ -187,7 +187,38 @@ int main() {
         memset(student_data,0,sizeof(student_data));
         recv(client_socket,&student_data,sizeof(student_data),0);
         printf("%s",student_data);   
-     }
+    }
+
+    if(choice_admin=='5')
+    {
+        char get_sid[50];
+        memset(get_sid,0,sizeof(get_sid));
+        recv(client_socket,get_sid,sizeof(get_sid),0);
+        printf("%s",get_sid);
+        memset(get_sid,0,sizeof(get_sid));
+        scanf("%s",get_sid);
+        send(client_socket,get_sid,sizeof(get_sid),0);
+        memset(get_sid,0,sizeof(get_sid));
+        char s_response[400];
+        memset(s_response,0,sizeof(s_response));
+        recv(client_socket,s_response,sizeof(s_response),0);
+        printf("%s",s_response);
+    }
+    if(choice_admin=='6')
+    {
+        char get_sid1[50];
+        memset(get_sid1,0,sizeof(get_sid1));
+        recv(client_socket,get_sid1,sizeof(get_sid1),0);
+        printf("%s",get_sid1);
+        memset(get_sid1,0,sizeof(get_sid1));
+        scanf("%s",get_sid1);
+        send(client_socket,get_sid1,sizeof(get_sid1),0);
+        memset(get_sid1,0,sizeof(get_sid1));
+        char s_response1[400];
+        memset(s_response1,0,sizeof(s_response1));
+        recv(client_socket,s_response1,sizeof(s_response1),0);
+        printf("%s",s_response1);
+    }
 
      if(choice_admin=='7')
      {
@@ -339,7 +370,22 @@ if(readchoice=='2')
             recv(client_socket,&receive_msg,sizeof(receive_msg),0);
             printf("%s",receive_msg); 
         }
+        if(choice_student=='3')
+        {
+            char delete[35];
+            memset(&delete,0,sizeof(delete));
+            recv(client_socket,&delete,sizeof(delete),0);
+            printf("%s",delete);
 
+            //send courseid
+            int send_id;
+            scanf("%d",&send_id);
+            send(client_socket,&send_id,sizeof(send_id),0); 
+
+            // char received_msg[10];
+            // recv(client_socket,&received_msg,sizeof(received_msg),0);
+            // printf("%s",received_msg); 
+        }
         if(choice_student=='4')
         {
             int stu_ack;
