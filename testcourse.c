@@ -3,18 +3,6 @@
 #include<unistd.h>
 #include "structures.c"
 
-/*
-{
-    int id;
-    int faculty_id;
-    char name[50];
-    char department[50];
-    int seat;
-    int credit;
-    int max_seats;
-}
-*/
-
 void main(){
 	
 	int fd = open("course.txt", O_RDWR);
