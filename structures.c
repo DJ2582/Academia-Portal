@@ -6,6 +6,7 @@ struct StudentDetail
     int age;
     char email[50];
     char address[50];
+    int active;
 };
 
 struct FacultyDetail
@@ -27,6 +28,7 @@ struct CourseDetail
     char department[50];
     int seat;
     int credit;
+    int max_seats;
 };
 
 struct course_enrolled
@@ -34,5 +36,6 @@ struct course_enrolled
 	int student_id;
 	int course_id;
 	char course_name[50];
-	int faculty_id;	
+	int faculty_id;
+    int enrolled;	
 };
