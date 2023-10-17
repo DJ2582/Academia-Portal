@@ -66,6 +66,7 @@ void add_course(int client_socket,int id)
     send(client_socket,text3,strlen(text3),0);
     recv(client_socket,&buff,sizeof(buff),0);
     course.seat=atoi(buff);
+    course.max_seats=atoi(buff);
     // strcpy(course.seat,buff);
     memset(&buff,0,sizeof(buff));
 
